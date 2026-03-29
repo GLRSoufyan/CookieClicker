@@ -1,34 +1,136 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MongoDB Cookie Clicker</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f0f0; }
-        #cookie { width: 200px; cursor: pointer; transition: transform 0.1s; }
-        #cookie:active { transform: scale(0.9); }
-        .stats { font-size: 1.5rem; margin: 20px; }
-        .shop { display: flex; justify-content: center; gap: 20px; }
-        .upgrade { padding: 10px; background: white; border: 2px solid #654321; border-radius: 8px; cursor: pointer; }
-        .upgrade:disabled { opacity: 0.5; cursor: not-allowed; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COOKIE CLICKER ∞</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Cookie Clicker</h1>
-    <div class="stats">
-        Koekjes: <span id="cookie-count">0</span><br>
-        <small>Per seconde: <span id="cps-count">0</span></small>
+  <div class="scanlines"></div>
+  <div class="grid-bg"></div>
+  <div id="particles-container"></div>
+
+  <div class="hud-top">
+    <div class="hud-logo">COOKIE<span>∞</span>CLICKER</div>
+    <div class="hud-rebirth-info">
+      <span class="rebirth-label">TIER</span>
+      <span id="rebirth-tier-name" class="rebirth-tier">NORMAAL</span>
+      <span class="rebirth-label">MULTIPLIER</span>
+      <span id="rebirth-multiplier" class="rebirth-mult">×1.0</span>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- LEFT: STATS -->
+    <div class="panel panel-left">
+      <div class="panel-title">◈ STATISTIEKEN</div>
+      <div class="stat-row">
+        <span class="stat-label">KOEKJES</span>
+        <span id="cookie-count" class="stat-value glow-blue">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">PER SECONDE</span>
+        <span id="cps-count" class="stat-value glow-purple">0.0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">PER KLIK</span>
+        <span id="cpc-count" class="stat-value glow-blue">1</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">TOTAAL VERDIEND</span>
+        <span id="total-count" class="stat-value">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">REBIRTHS</span>
+        <span id="rebirth-count" class="stat-value glow-gold">0</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-title">◈ REBIRTH TIERS</div>
+      <div class="tier-list">
+        <div class="tier-item" id="tier-0" data-tier="0">
+          <span class="tier-emoji">🍪</span>
+          <span class="tier-name">Normaal Koekje</span>
+          <span class="tier-mult">×1</span>
+        </div>
+        <div class="tier-item" id="tier-1" data-tier="1">
+          <span class="tier-emoji">🌈</span>
+          <span class="tier-name">Regenboog Koekje</span>
+          <span class="tier-mult">×2</span>
+        </div>
+        <div class="tier-item" id="tier-2" data-tier="2">
+          <span class="tier-emoji">🍫</span>
+          <span class="tier-name">Dubai Chocolade</span>
+          <span class="tier-mult">×5</span>
+        </div>
+        <div class="tier-item" id="tier-3" data-tier="3">
+          <span class="tier-emoji">🎀</span>
+          <span class="tier-name">Labubu Koekje</span>
+          <span class="tier-mult">×12</span>
+        </div>
+        <div class="tier-item" id="tier-4" data-tier="4">
+          <span class="tier-emoji">👑</span>
+          <span class="tier-name">Koning Koekje</span>
+          <span class="tier-mult">×30</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <button id="save-btn" class="sys-btn">💾 OPSLAAN</button>
+      <div id="save-status" class="save-status"></div>
     </div>
 
-    <img id="cookie" src="https://cdn-icons-png.flaticon.com/512/1047/1047711.png" alt="Cookie">
+    <!-- CENTER: COOKIE -->
+    <div class="panel panel-center">
+      <div id="cookie-wrapper">
+        <div id="cookie-glow-ring"></div>
+        <button id="cookie" title="Klik!"></button>
+        <div id="click-ripple"></div>
+      </div>
+      <div id="float-container"></div>
 
-    <div class="shop">
-        <button id="buy-auto" class="upgrade">Koop Auto-Clicker (Prijs: 10)</button>
+      <!-- REBIRTH BUTTON -->
+      <div id="rebirth-section">
+        <button id="rebirth-btn" class="rebirth-btn" disabled>
+          <span class="rebirth-btn-icon">⟳</span>
+          <span id="rebirth-btn-text">REBIRTH</span>
+          <span id="rebirth-btn-sub" class="rebirth-btn-sub">Vereist: 1,000 koekjes</span>
+        </button>
+      </div>
+
+      <!-- QUANTITY SELECTOR -->
+      <div class="qty-selector">
+        <span class="qty-label">KOOP</span>
+        <button class="qty-btn active" data-qty="1">×1</button>
+        <button class="qty-btn" data-qty="10">×10</button>
+        <button class="qty-btn" data-qty="100">×100</button>
+        <button class="qty-btn" data-qty="max">MAX</button>
+      </div>
     </div>
 
-    <p><button id="save-btn">Handmatig Opslaan</button></p>
+    <!-- RIGHT: SHOP -->
+    <div class="panel panel-right">
+      <div class="panel-title">◈ UPGRADES</div>
+      <div id="shop-container"></div>
+    </div>
+  </div>
 
-    <script src="main.js"></script>
+  <!-- REBIRTH MODAL -->
+  <div id="rebirth-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-title" id="modal-title">REBIRTH</div>
+      <div class="modal-cookie-preview" id="modal-cookie-preview"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <div class="modal-reward" id="modal-reward"></div>
+      <div class="modal-buttons">
+        <button id="modal-confirm" class="modal-btn-confirm">⟳ REBIRTH!</button>
+        <button id="modal-cancel" class="modal-btn-cancel">✕ ANNULEER</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
 </body>
 </html>
